@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idea Library</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#EDEAE0;--surface:#fff;--surface2:#F5F2EA;
+  --accent:#2D3A1E;--accent2:#3A4A28;
+  --border:rgba(45,58,30,0.11);--border2:rgba(45,58,30,0.2);
+  --text:#2D3A1E;--muted:#7A8A6A;--hint:#AABAA0;
+  --r:14px;--rl:18px;
+  --sans:-apple-system,'Helvetica Neue',sans-serif;
+  --gold:#C8920A;--gold-bg:#FDF3D0;
+  --coral:#D04040;--coral-bg:#FCE4E0;
+  --lavender:#7050C8;--lavender-bg:#EDE8FC;
+  --sage:#4A8A30;--sage-bg:#D8EEC8;
+}
+html,body{min-height:100vh;font-family:var(--sans);background:var(--bg);color:var(--text)}
+.page{display:flex;flex-direction:column;min-height:100vh}
+
+.header{background:var(--surface);border-bottom:0.5px solid var(--border2);padding:1.25rem 1.75rem 0;flex-shrink:0}
+.header-main{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem}
+.lib-title{font-size:30px;font-weight:700;color:var(--text);display:block;margin-bottom:3px;letter-spacing:-0.6px;line-height:1.1}
+.lib-sub{font-size:12px;color:var(--muted)}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:8px}
+.search-wrap{position:relative}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--hint);pointer-events:none}
+#search-input{padding:8px 12px 8px 30px;font-size:12px;border:0.5px solid var(--border2);border-radius:999px;background:var(--surface2);color:var(--text);font-family:var(--sans);outline:none;width:180px}
+#search-input:focus{border-color:var(--accent);background:var(--surface)}
+#search-input::placeholder{color:var(--hint)}
+.add-pill{background:var(--accent);color:#fff;border:none;border-radius:999px;padding:9px 17px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--sans);white-space:nowrap}
+.add-pill:hover{background:var(--accent2)}
+
+.header-bottom{display:flex;align-items:center;gap:1rem;padding-bottom:1rem}
+.stats{display:flex;gap:1.25rem;flex-shrink:0}
+.stat{display:flex;align-items:baseline;gap:4px}
+.stat-num{font-size:17px;font-weight:700;color:var(--text)}
+.stat-label{font-size:11px;color:var(--muted)}
+.hdivider{width:1px;height:16px;background:var(--border2);flex-shrink:0}
+.filter-wrap{display:flex;gap:5px;flex-wrap:wrap;flex:1}
+.filter-btn{font-size:11px;padding:4px 12px;border-radius:999px;border:0.5px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:all 0.12s;white-space:nowrap}
+.filter-btn:hover{color:var(--accent);border-color:var(--accent)}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.cards-area{padding:1.5rem 1.75rem 3rem;flex:1}
+.bento{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;align-items:start}
+
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);cursor:pointer;overflow:hidden;transition:transform 0.13s,border-color 0.13s;position:relative}
+.card:hover{transform:translateY(-2px);border-color:var(--border2)}
+.card-date-corner{position:absolute;top:12px;right:13px;font-size:10px;color:var(--hint);font-weight:500}
+.card-body{padding:15px 16px;padding-top:32px}
+.card-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:7px;display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px}
+.ey-gold{background:var(--gold-bg);color:var(--gold)}
+.ey-coral{background:var(--coral-bg);color:var(--coral)}
+.ey-lavender{background:var(--lavender-bg);color:var(--lavender)}
+.ey-sage{background:var(--sage-bg);color:var(--sage)}
+.ey-default{background:var(--surface2);color:var(--muted)}
+.card-title{font-size:14px;font-weight:700;line-height:1.35;color:var(--text);margin-bottom:7px}
+.card-snippet{font-size:12px;color:var(--muted);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px}
+.card-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:10px;padding:3px 9px;border-radius:999px;font-weight:500;background:var(--surface2);color:var(--muted);border:0.5px solid var(--border2)}
+
+.img-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rl);cursor:pointer;overflow:hidden;transition:transform 0.13s;position:relative}
+.img-card:hover{transform:translateY(-2px)}
+.img-card img{width:100%;height:200px;object-fit:cover;display:block}
+.img-card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.62) 0%,rgba(0,0,0,0.08) 45%,transparent 68%)}
+.img-card-content{position:absolute;bottom:0;left:0;right:0;padding:14px 15px}
+.img-card-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:5px}
+.img-card-title{font-size:14px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
+.img-card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.img-tag{font-size:10px;padding:3px 10px;border-radius:999px;font-weight:600;background:rgba(255,255,255,0.18);color:#fff}
+.img-tag-cat{font-size:10px;padding:3px 10px;border-radius:999px;font-weight:700;color:#fff}
+.img-date{position:absolute;top:12px;right:13px;font-size:10px;color:rgba(255,255,255,0.65);font-weight:500}
+
+.empty-state{grid-column:1/-1;padding:5rem 2rem;text-align:center;color:var(--muted)}
+.empty-state i{font-size:38px;display:block;margin-bottom:14px;color:var(--hint)}
+.empty-state strong{font-size:15px;color:var(--text);display:block;margin-bottom:6px}
+.empty-state p{font-size:13px;line-height:1.7}
+
+/* Modal overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(20,30,15,0.52);z-index:200;align-items:center;justify-content:center;padding:1rem}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--rl);border:0.5px solid var(--border2);padding:1.75rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:1.25rem;color:var(--text)}
+.field-label{font-size:11px;font-weight:700;color:var(--muted);display:block;margin:13px 0 4px;text-transform:uppercase;letter-spacing:0.05em}
+.hint-label{font-weight:400;text-transform:none;letter-spacing:0;color:var(--hint)}
+.modal input,.modal textarea,.modal select{width:100%;padding:9px 11px;font-size:13px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--surface2);color:var(--text);font-family:var(--sans);outline:none}
+.modal input:focus,.modal textarea:focus,.modal select:focus{border-color:var(--accent);background:var(--surface)}
+.modal textarea{resize:vertical;min-height:80px;line-height:1.6}
+.modal-footer{display:flex;gap:7px;justify-content:flex-end;margin-top:1.25rem;padding-top:1rem;border-top:0.5px solid var(--border)}
+.btn-save{background:var(--accent);color:#fff;border:none;padding:9px 20px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans)}
+.btn-save:hover{background:var(--accent2)}
+.btn-cancel{background:transparent;color:var(--muted);border:0.5px solid var(--border2);padding:9px 14px;border-radius:999px;font-size:13px;cursor:pointer;font-family:var(--sans)}
+.btn-cancel:hover{background:var(--surface2)}
+
+.upload-zone{border:1.5px dashed var(--border2);border-radius:var(--r);padding:1.25rem 1rem;text-align:center;cursor:pointer;background:var(--surface2);transition:all 0.15s}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent);background:var(--sage-bg)}
+.upload-zone i{font-size:24px;color:var(--hint);display:block;margin-bottom:6px}
+.upload-zone p{font-size:12px;color:var(--muted);line-height:1.5}
+.upload-preview{width:100%;max-height:140px;object-fit:contain;border-radius:8px;margin-top:10px;display:none;border:0.5px solid var(--border)}
+
+.ai-pill{display:none;align-items:center;gap:6px;font-size:12px;color:var(--sage);margin-top:10px;background:var(--sage-bg);padding:8px 12px;border-radius:8px;font-weight:600}
+.spinner{width:13px;height:13px;border:2px solid #B8D8A8;border-top-color:var(--sage);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.det-img{width:100%;border-radius:10px;object-fit:cover;max-height:210px;display:block;margin-bottom:1.1rem}
+.det-title{font-size:19px;font-weight:700;margin-bottom:6px;line-height:1.3;color:var(--text)}
+.det-body{font-size:13px;line-height:1.7;color:var(--muted);white-space:pre-wrap;margin:9px 0}
+.det-meta{font-size:11px;color:var(--hint);margin-top:1rem;padding-top:0.75rem;border-top:0.5px solid var(--border)}
+.btn-del{background:#FDEAEA;color:#B02020;border:none;padding:9px 14px;border-radius:999px;font-size:13px;cursor:pointer;font-family:var(--sans);font-weight:600}
+.btn-del:hover{background:#FAD0D0}
+.btn-dl{background:var(--sage-bg);color:var(--sage);border:none;padding:9px 14px;border-radius:999px;font-size:13px;cursor:pointer;font-family:var(--sans);font-weight:600;display:flex;align-items:center;gap:4px}
+.btn-dl:hover{background:#C4E4B0}
+
+/* AI notice banner */
+.ai-notice{background:var(--gold-bg);border-bottom:0.5px solid rgba(200,146,10,0.3);padding:8px 1.75rem;font-size:11px;color:var(--gold);display:flex;align-items:center;gap:7px}
+.ai-notice i{font-size:13px;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <div class="header-main">
+      <div>
+        <span class="lib-title">Idea Library</span>
+        <span class="lib-sub">Collect, categorise and revisit your inspiration</span>
+      </div>
+      <div class="header-right">
+        <div class="search-wrap">
+          <i class="ti ti-search"></i>
+          <input type="text" id="search-input" placeholder="Search ideas…" />
+        </div>
+        <button class="add-pill" id="add-btn"><i class="ti ti-plus"></i> Add idea</button>
+      </div>
+    </div>
+    <div class="header-bottom">
+      <div class="stats">
+        <div class="stat"><span class="stat-num" id="st-total">0</span><span class="stat-label">ideas</span></div>
+        <div class="stat"><span class="stat-num" id="st-cats">0</span><span class="stat-label">categories</span></div>
+      </div>
+      <div class="hdivider"></div>
+      <div class="filter-wrap" id="filter-wrap">
+        <button class="filter-btn active" data-cat="all">All</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cards-area">
+    <div class="bento" id="bento"></div>
+  </div>
+</div>
+
+<!-- Add modal -->
+<div class="overlay" id="add-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Add idea">
+    <div class="modal-title">Add to library</div>
+    <label class="field-label">Type</label>
+    <select id="idea-type">
+      <option value="note">Note / text</option>
+      <option value="link">Link / URL</option>
+      <option value="image">Image</option>
+      <option value="design">Design idea</option>
+      <option value="code">Code snippet</option>
+      <option value="quote">Quote</option>
+    </select>
+    <label class="field-label">Title <span class="hint-label">(AI will suggest if blank)</span></label>
+    <input type="text" id="idea-title" placeholder="Short title…" />
+    <div id="text-area-wrap">
+      <label class="field-label">Content</label>
+      <textarea id="idea-content" placeholder="Paste text, URL, code…" rows="3"></textarea>
+    </div>
+    <div id="upload-wrap" style="display:none">
+      <label class="field-label">Image file</label>
+      <div class="upload-zone" id="upload-zone">
+        <i class="ti ti-cloud-upload"></i>
+        <p><strong>Click to upload</strong> or drag & drop</p>
+        <p style="font-size:11px;color:var(--hint);margin-top:2px">PNG, JPG, GIF, WebP — stored locally in your browser</p>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none">
+      <img id="upload-preview" class="upload-preview" alt="Preview" />
+    </div>
+    <label class="field-label">Tags <span class="hint-label">(comma-separated, optional)</span></label>
+    <input type="text" id="idea-tags" placeholder="e.g. color, typography" />
+    <div class="ai-notice" id="ai-notice" style="margin-top:12px;border-radius:8px;padding:8px 10px">
+      <i class="ti ti-info-circle"></i>
+      AI categorisation requires an Anthropic API key. Add yours below or save without it.
+    </div>
+    <label class="field-label" style="margin-top:10px">Anthropic API key <span class="hint-label">(optional — for auto-categorisation)</span></label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-…" />
+    <div class="ai-pill" id="ai-pill"><span class="spinner"></span><span id="ai-text">Categorising with AI…</span></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" id="close-add">Cancel</button>
+      <button class="btn-save" id="save-idea">Save & categorise</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="overlay" id="det-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Idea detail">
+    <div id="det-inner"></div>
+    <div class="modal-footer" id="det-footer"></div>
+  </div>
+</div>
+
+<script>
+const SK = 'idea-lib-standalone-v1';
+const API_KEY_SK = 'idea-lib-apikey';
+let ideas = [], activeCat = 'all', activeDetId = null, pendingImg = null, pendingName = null;
+
+const CMAP = {
+  Design:'sage', Typography:'lavender', 'UI/UX':'sage', Color:'coral',
+  Branding:'gold', Copywriting:'lavender', Layout:'sage', Animation:'lavender',
+  Inspiration:'gold', Code:'coral', Research:'lavender', Product:'sage',
+  Photography:'gold', Nature:'sage', Other:'default'
+};
+const ICONS = { note:'ti-notes', link:'ti-link', image:'ti-photo', design:'ti-palette', code:'ti-code', quote:'ti-quote' };
+const NAMES = { note:'Note', link:'Link', image:'Image', design:'Design', code:'Code', quote:'Quote' };
+
+function eyClass(cat) { return 'ey-' + (CMAP[cat] || 'default'); }
+
+/* ── Storage (localStorage) ── */
+function loadIdeas() {
+  try {
+    const raw = localStorage.getItem(SK);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function saveIdeas() {
+  try { localStorage.setItem(SK, JSON.stringify(ideas)); } catch(e) {
+    alert('Storage full — try deleting some image entries (images are stored as base64 and take up space).');
+  }
+}
+function getSavedApiKey() {
+  return localStorage.getItem(API_KEY_SK) || '';
+}
+function saveApiKey(key) {
+  if (key) localStorage.setItem(API_KEY_SK, key);
+}
+
+/* ── Init ── */
+function init() {
+  ideas = loadIdeas();
+  // Pre-fill saved API key
+  const saved = getSavedApiKey();
+  if (saved) document.getElementById('api-key-input').value = saved;
+  renderAll();
+}
+
+function allCats() {
+  return [...new Set(ideas.map(i => i.category || 'Other'))].sort();
+}
+
+/* ── Filters ── */
+function renderFilters() {
+  const all = ['all', ...allCats()];
+  document.getElementById('filter-wrap').innerHTML = all.map(c =>
+    `<button class="filter-btn${c === activeCat ? ' active' : ''}" data-cat="${c}">${c === 'all' ? 'All' : c}</button>`
+  ).join('');
+  document.getElementById('filter-wrap').querySelectorAll('.filter-btn').forEach(b =>
+    b.addEventListener('click', () => { activeCat = b.dataset.cat; renderAll(); })
+  );
+}
+
+function getFiltered() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  return ideas.filter(i => {
+    const mc = activeCat === 'all' || i.category === activeCat;
+    const mq = !q || [i.title, i.content, ...(i.tags || []), i.category].join(' ').toLowerCase().includes(q);
+    return mc && mq;
+  });
+}
+
+/* ── Render ── */
+function imgCatBg(cat) {
+  const m = { sage:'rgba(72,138,48,0.85)', gold:'rgba(200,146,10,0.85)', coral:'rgba(208,64,64,0.85)', lavender:'rgba(112,80,200,0.85)', default:'rgba(80,80,80,0.6)' };
+  return m[CMAP[cat] || 'default'];
+}
+
+function renderAll() {
+  renderFilters();
+  const f = getFiltered();
+  document.getElementById('st-total').textContent = ideas.length;
+  document.getElementById('st-cats').textContent = allCats().length;
+
+  const bento = document.getElementById('bento');
+  if (!f.length) {
+    bento.innerHTML = ideas.length
+      ? `<div class="empty-state"><i class="ti ti-search"></i><strong>No matches</strong><p>Try a different search or category.</p></div>`
+      : `<div class="empty-state"><i class="ti ti-books"></i><strong>Your library is empty</strong><p>Click "Add idea" to save your first note, image, link or inspiration.<br>Everything is stored locally in your browser.</p></div>`;
+    return;
+  }
+
+  bento.innerHTML = f.map(i => {
+    const icon = ICONS[i.type] || 'ti-bulb';
+    const name = NAMES[i.type] || i.type;
+    const dt = new Date(i.created).toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+    const tags = (i.tags || []).slice(0, 3).map(t => `<span class="tag">${t}</span>`).join('');
+
+    if (i.imageData) {
+      const catBg = imgCatBg(i.category);
+      const imgTags = (i.tags || []).slice(0, 3).map(t => `<span class="img-tag">${t}</span>`).join('');
+      const catTag = i.category ? `<span class="img-tag-cat" style="background:${catBg}">${i.category}</span>` : '';
+      return `<div class="img-card" data-id="${i.id}">
+        <img src="${i.imageData}" alt="${escHtml(i.title)}" onerror="this.style.opacity='0.3'">
+        <div class="img-card-overlay"></div>
+        <span class="img-date">${dt}</span>
+        <div class="img-card-content">
+          <div class="img-card-eyebrow">Image</div>
+          <div class="img-card-title">${escHtml(i.title)}</div>
+          <div class="img-card-tags">${catTag}${imgTags}</div>
+        </div>
+      </div>`;
+    }
+
+    const isLink = i.type === 'link';
+    return `<div class="card" data-id="${i.id}">
+      <span class="card-date-corner">${dt}</span>
+      <div class="card-body">
+        <span class="card-eyebrow ${eyClass(i.category)}"><i class="ti ${icon}" style="font-size:10px"></i>${name}</span>
+        <div class="card-title">${escHtml(i.title)}</div>
+        ${!isLink && i.content ? `<div class="card-snippet">${escHtml(i.content.substring(0, 130))}</div>` : ''}
+        ${isLink ? `<div style="font-size:11px;color:var(--hint);margin-bottom:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(i.content)}</div>` : ''}
+        <div class="card-tags">${tags}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  bento.querySelectorAll('[data-id]').forEach(el =>
+    el.addEventListener('click', () => openDetail(el.dataset.id))
+  );
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── Detail modal ── */
+function openDetail(id) {
+  activeDetId = id;
+  const i = ideas.find(x => x.id === id);
+  if (!i) return;
+  const dt = new Date(i.created).toLocaleString('en-GB', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  const tags = (i.tags || []).map(t => `<span class="tag">${escHtml(t)}</span>`).join('');
+  const eyC = eyClass(i.category);
+  const catBadge = i.category ? `<span class="card-eyebrow ${eyC}"><i class="ti ${ICONS[i.type] || 'ti-bulb'}" style="font-size:10px"></i>${NAMES[i.type] || i.type} · ${i.category}</span>` : '';
+
+  document.getElementById('det-inner').innerHTML = `
+    ${i.imageData ? `<img class="det-img" src="${i.imageData}" alt="${escHtml(i.title)}">` : ''}
+    <div style="margin-bottom:10px">${catBadge}</div>
+    <div class="det-title">${escHtml(i.title)}</div>
+    ${i.type === 'link' && i.content ? `<a href="${escHtml(i.content)}" target="_blank" rel="noopener" style="font-size:12px;color:var(--sage);word-break:break-all;display:block;margin-top:4px">${escHtml(i.content)}</a>` : ''}
+    ${i.type !== 'image' && i.content ? `<div class="det-body">${escHtml(i.content)}</div>` : ''}
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:10px">${tags}</div>
+    <div class="det-meta">Added ${dt}${i.fileName ? ' · ' + escHtml(i.fileName) : ''}</div>`;
+
+  const footer = document.getElementById('det-footer');
+  let btns = `<button class="btn-del" id="b-del"><i class="ti ti-trash" style="font-size:12px;vertical-align:-1px"></i> Delete</button><div style="flex:1"></div>`;
+  if (i.imageData) btns += `<button class="btn-dl" id="b-dl"><i class="ti ti-download" style="font-size:12px"></i> Download</button>`;
+  btns += `<button class="btn-cancel" id="b-close">Close</button>`;
+  footer.innerHTML = btns;
+
+  footer.querySelector('#b-del').addEventListener('click', () => {
+    if (!confirm('Delete this idea?')) return;
+    ideas = ideas.filter(x => x.id !== activeDetId);
+    saveIdeas();
+    document.getElementById('det-overlay').classList.remove('open');
+    renderAll();
+  });
+  footer.querySelector('#b-close').addEventListener('click', () =>
+    document.getElementById('det-overlay').classList.remove('open')
+  );
+  if (i.imageData) {
+    footer.querySelector('#b-dl').addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = i.imageData;
+      a.download = i.fileName || 'idea-image.png';
+      a.click();
+    });
+  }
+  document.getElementById('det-overlay').classList.add('open');
+}
+
+/* ── AI categorisation ── */
+async function categoriseAI(title, content, type, apiKey) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: `Respond ONLY with a JSON object, no markdown fences:\n{"category":"one of: Design,Typography,Color,UI/UX,Branding,Copywriting,Layout,Animation,Inspiration,Code,Research,Product,Photography,Nature,Other","tags":["tag1","tag2","tag3"],"title_suggestion":"short title under 55 chars if title blank"}\nType:${type}\nTitle:${title}\nContent:${(content || '').substring(0, 400)}`
+      }]
+    })
+  });
+  const d = await res.json();
+  if (d.error) throw new Error(d.error.message);
+  return JSON.parse(d.content.map(c => c.text || '').join('').replace(/```json|```/g, '').trim());
+}
+
+/* ── Add idea ── */
+document.getElementById('add-btn').addEventListener('click', () => {
+  document.getElementById('add-overlay').classList.add('open');
+  updateTypeUI();
+});
+document.getElementById('close-add').addEventListener('click', () => {
+  document.getElementById('add-overlay').classList.remove('open');
+  resetForm();
+});
+document.getElementById('idea-type').addEventListener('change', updateTypeUI);
+
+function updateTypeUI() {
+  const t = document.getElementById('idea-type').value;
+  document.getElementById('upload-wrap').style.display = t === 'image' ? 'block' : 'none';
+  document.getElementById('text-area-wrap').style.display = t === 'image' ? 'none' : 'block';
+}
+
+const uz = document.getElementById('upload-zone');
+const fi = document.getElementById('file-input');
+const pv = document.getElementById('upload-preview');
+uz.addEventListener('click', () => fi.click());
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('drag'));
+uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('drag'); if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); });
+fi.addEventListener('change', () => { if (fi.files[0]) readFile(fi.files[0]); });
+
+function readFile(f) {
+  pendingName = f.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingImg = e.target.result;
+    pv.src = pendingImg;
+    pv.style.display = 'block';
+    if (!document.getElementById('idea-title').value)
+      document.getElementById('idea-title').value = f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+  };
+  reader.readAsDataURL(f);
+}
+
+document.getElementById('save-idea').addEventListener('click', async () => {
+  const type = document.getElementById('idea-type').value;
+  const title = document.getElementById('idea-title').value.trim();
+  const content = type === 'image' ? '' : document.getElementById('idea-content').value.trim();
+  const tagsRaw = document.getElementById('idea-tags').value.trim();
+  const apiKey = document.getElementById('api-key-input').value.trim();
+  if (!title && !content && !pendingImg) return;
+
+  const pill = document.getElementById('ai-pill');
+  pill.style.display = 'flex';
+  document.getElementById('ai-text').textContent = 'Categorising with AI…';
+
+  let category = 'Other';
+  let tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()).filter(Boolean) : [];
+  let finalTitle = title || content.substring(0, 50) || pendingName || 'Untitled';
+
+  if (apiKey) {
+    saveApiKey(apiKey);
+    try {
+      const ai = await categoriseAI(finalTitle, content, type, apiKey);
+      category = ai.category || 'Other';
+      if (!tags.length) tags = ai.tags || [];
+      if (!title && ai.title_suggestion) finalTitle = ai.title_suggestion;
+      document.getElementById('ai-text').textContent = `Saved as "${category}" ✓`;
+    } catch(e) {
+      document.getElementById('ai-text').textContent = 'AI error — saved without categorisation';
+      console.error(e);
+    }
+  } else {
+    document.getElementById('ai-text').textContent = 'Saved (no API key — category set to Other)';
+  }
+
+  ideas.unshift({
+    id: Date.now().toString(),
+    title: finalTitle,
+    content,
+    type,
+    category,
+    tags,
+    created: new Date().toISOString(),
+    imageData: pendingImg || null,
+    fileName: pendingName || null
+  });
+  saveIdeas();
+  renderAll();
+
+  setTimeout(() => {
+    document.getElementById('add-overlay').classList.remove('open');
+    resetForm();
+  }, 800);
+});
+
+function resetForm() {
+  ['idea-title', 'idea-content', 'idea-tags'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('idea-type').value = 'note';
+  document.getElementById('ai-pill').style.display = 'none';
+  pendingImg = null; pendingName = null;
+  pv.style.display = 'none'; pv.src = '';
+  updateTypeUI();
+}
+
+document.getElementById('search-input').addEventListener('input', renderAll);
+
+[document.getElementById('add-overlay'), document.getElementById('det-overlay')].forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+);
+
+/* ── Keyboard: close on Escape ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+  }
+});
+
+init();
+</script>
+</body>
+</html>
